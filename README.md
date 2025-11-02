@@ -1,73 +1,94 @@
-# Welcome to your Lovable project
+# AI Crypto Journal
 
-## Project info
+An intuitive and powerful user interface for an AI-powered crypto journaling application. Track, analyze, and automate your crypto portfolio with AI-driven insights, detailed portfolio management, and on-chain automation agents.
 
-**URL**: https://lovable.dev/projects/6db717cf-9960-426a-9f54-7e5c10795ba9
+ 
+*(Note: Replace with an actual screenshot of the application)*
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## ✨ Key Features
 
-**Use Lovable**
+This application provides a comprehensive suite of tools for the modern crypto investor, organized into four main sections:
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/6db717cf-9960-426a-9f54-7e5c10795ba9) and start prompting.
+*   **📖 Journal**: A two-pane interface to browse and read a chronological feed of AI-generated insights. The view includes detailed analysis, key data points, and visualizations to support the AI's conclusions.
+*   **📊 Portfolio**: A granular and functional overview of all crypto holdings. Features an interactive asset table that can be sorted and expanded to show recent transactions and price charts for individual assets.
+*   **🤖 On-Chain Agents**: A powerful dashboard to create, monitor, and manage automated alerts and actions. Agents are displayed as clear, interactive cards, and a full trigger history is available for review.
+*   **⚙️ Settings**: A consolidated, tabbed interface for all user management functions, including profile information, billing history, wallet connections, notification preferences, and a gallery for earned NFT badges.
 
-Changes made via Lovable will be committed automatically to this repo.
+---
 
-**Use your preferred IDE**
+## 🛠️ Technology Stack
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+This project is built with a modern, efficient, and scalable technology stack:
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+*   **Framework**: [React](https://reactjs.org/) (via [Vite](https://vitejs.dev/))
+*   **Language**: [TypeScript](https://www.typescriptlang.org/)
+*   **UI Components**: [shadcn/ui](https://ui.shadcn.com/)
+*   **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+*   **Routing**: [React Router DOM](https://reactrouter.com/)
+*   **Icons**: [Lucide React](https://lucide.dev/)
 
-Follow these steps:
+---
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## 🚀 Getting Started
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+To get a local copy up and running, follow these simple steps.
 
-# Step 3: Install the necessary dependencies.
-npm i
+### Prerequisites
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+You need to have [Node.js](https://nodejs.org/) (version 18 or higher) and [npm](https://www.npmjs.com/) installed on your machine.
+
+### Installation & Setup
+
+1.  **Clone the repository:**
+    ```sh
+    git clone https://github.com/your-username/akintun-cryptosight-journal.git
+    ```
+2.  **Navigate to the project directory:**
+    ```sh
+    cd akintun-cryptosight-journal
+    ```
+3.  **Install NPM packages:**
+    ```sh
+    npm install
+    ```
+4.  **Run the development server:**
+    ```sh
+    npm run dev
+    ```
+
+The application will now be running on `http://localhost:8080`.
+
+---
+
+## 📂 Project Structure
+
+The codebase is organized to be clean, modular, and easy to navigate.
+
+```
+/src
+├── components/
+│   ├── ui/         # Auto-generated shadcn/ui components
+│   └── Layout.tsx  # Main application shell with header and navigation
+├── hooks/          # Custom React hooks (e.g., use-mobile)
+├── lib/            # Utility functions (e.g., cn for classnames)
+├── pages/          # Core views/routes for the application
+│   ├── Agents.tsx
+│   ├── Journal.tsx
+│   ├── Portfolio.tsx
+│   └── Settings.tsx
+├── App.tsx         # Main component with routing logic
+└── main.tsx        # Application entry point
 ```
 
-**Edit a file directly in GitHub**
+---
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 📜 Available Scripts
 
-**Use GitHub Codespaces**
+In the project directory, you can run the following scripts:
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/6db717cf-9960-426a-9f54-7e5c10795ba9) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+*   `npm run dev`: Starts the development server with hot-reloading.
+*   `npm run build`: Bundles the app for production to the `dist` folder.
+*   `npm run lint`: Lints the code to find and fix problems.
+*   `npm run preview`: Serves the production build locally to preview it.
