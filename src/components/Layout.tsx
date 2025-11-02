@@ -145,7 +145,33 @@ export function Layout({ children }: { children: React.ReactNode }) {
         )}
 
         {/* Main Content */}
-        <main className="flex-1 overflow-auto">{children}</main>
+        <main className="flex-1 overflow-auto">
+          {children}
+          
+          {/* Footer */}
+          <footer className="border-t border-border bg-card/30 backdrop-blur-sm mt-auto">
+            <div className="container mx-auto px-4 py-8">
+              <div className="flex flex-wrap justify-center gap-8 md:gap-12">
+                {navItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <Link 
+                      key={item.path} 
+                      to={item.path}
+                      className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <Icon className="w-5 h-5" />
+                      <span className="font-medium">{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+              <div className="text-center mt-6 text-sm text-muted-foreground">
+                © 2025 AI Crypto Journal. All rights reserved.
+              </div>
+            </div>
+          </footer>
+        </main>
       </div>
     </div>
   );
