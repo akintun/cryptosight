@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Download } from "lucide-react";
+import { toast } from "sonner";
 
 const mockNFTBadges = [
   { id: "1", name: "Early Adopter", image: "🏆" },
@@ -17,7 +18,7 @@ const mockNFTBadges = [
 
 const mockConnections = [
   { id: "1", name: "MetaMask", address: "0x742d...4f8c", status: "connected" },
-  { id: "2", name: "Coinbase Wallet", address: "0x8a3f...2e1b", status: "connected" },
+  { id: "2", name: "Coinbase API", address: "api-key-ending-in...gH4s", status: "connected" },
   { id: "3", name: "WalletConnect", address: "Not connected", status: "disconnected" },
 ];
 
@@ -33,6 +34,10 @@ export default function Settings() {
   const [priceAlerts, setPriceAlerts] = useState(true);
   const [agentTriggers, setAgentTriggers] = useState(true);
 
+  const handleSaveChanges = () => {
+    toast.success("Profile information has been updated!");
+  };
+
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <div className="mb-8">
@@ -43,20 +48,20 @@ export default function Settings() {
       </div>
 
       <Tabs defaultValue="profile" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 h-auto gap-2">
-          <TabsTrigger value="profile" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-5 h-auto gap-2">
+          <TabsTrigger value="profile">
             Profile
           </TabsTrigger>
-          <TabsTrigger value="billing" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+          <TabsTrigger value="billing">
             Billing
           </TabsTrigger>
-          <TabsTrigger value="connections" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+          <TabsTrigger value="connections">
             Connections
           </TabsTrigger>
-          <TabsTrigger value="notifications" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+          <TabsTrigger value="notifications">
             Notifications
           </TabsTrigger>
-          <TabsTrigger value="badges" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+          <TabsTrigger value="badges">
             NFT Badges
           </TabsTrigger>
         </TabsList>
@@ -108,7 +113,7 @@ export default function Settings() {
                 </div>
               </div>
             </div>
-            <Button className="mt-6" size="lg">
+            <Button className="mt-6" size="lg" onClick={handleSaveChanges}>
               Save Changes
             </Button>
           </Card>
@@ -118,7 +123,7 @@ export default function Settings() {
         <TabsContent value="billing">
           <div className="space-y-6">
             <Card className="p-6 shadow-elegant card-gradient">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div>
                   <h2 className="text-2xl font-bold mb-2">Current Plan</h2>
                   <div className="flex items-center gap-3">
@@ -131,7 +136,7 @@ export default function Settings() {
                     Next billing date: November 1, 2025
                   </p>
                 </div>
-                <Button variant="outline" size="lg">
+                <Button variant="outline" size="lg" className="w-full md:w-auto">
                   Manage Subscription
                 </Button>
               </div>
@@ -153,7 +158,7 @@ export default function Settings() {
                     </div>
                     <div className="flex items-center gap-4">
                       <span className="font-bold">{invoice.amount}</span>
-                      <Button variant="ghost" size="sm">
+                      <Button variant="ghost" size="icon" aria-label={`Download invoice for ${invoice.date}`}>
                         <Download className="w-4 h-4" />
                       </Button>
                     </div>
@@ -167,45 +172,45 @@ export default function Settings() {
         {/* Connections Tab */}
         <TabsContent value="connections">
           <Card className="p-6 shadow-elegant">
-            <h2 className="text-2xl font-bold mb-6">Connected Wallets</h2>
+            <h2 className="text-2xl font-bold mb-6">Connected Wallets & Exchanges</h2>
             <div className="space-y-4">
               {mockConnections.map((connection) => (
                 <div
                   key={connection.id}
-                  className="flex items-center justify-between p-4 bg-muted/30 rounded-lg"
+                  className="flex flex-col md:flex-row items-start md:items-center justify-between p-4 bg-muted/30 rounded-lg gap-4"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-bold">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-bold flex-shrink-0">
                       {connection.name[0]}
                     </div>
                     <div>
                       <div className="font-semibold">{connection.name}</div>
-                      <div className="text-sm text-muted-foreground">
+                      <div className="text-sm text-muted-foreground break-all">
                         {connection.address}
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 w-full md:w-auto">
                     <Badge
                       variant={
                         connection.status === "connected" ? "default" : "outline"
                       }
-                      className={
+                      className={`w-24 justify-center ${
                         connection.status === "connected"
                           ? "bg-success text-success-foreground"
                           : ""
-                      }
+                      }`}
                     >
                       {connection.status === "connected"
                         ? "Connected"
                         : "Not Connected"}
                     </Badge>
                     {connection.status === "connected" ? (
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" className="w-full md:w-auto">
                         Revoke Access
                       </Button>
                     ) : (
-                      <Button variant="default" size="sm">
+                      <Button variant="default" size="sm" className="w-full md:w-auto">
                         Connect
                       </Button>
                     )}
@@ -226,21 +231,21 @@ export default function Settings() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="font-medium">Daily Journal Summary</div>
-                      <div className="text-sm text-muted-foreground">
+                      <Label htmlFor="daily-journal" className="font-medium cursor-pointer">Daily Journal Summary</Label>
+                      <p className="text-sm text-muted-foreground">
                         Receive daily AI insights in your inbox
-                      </div>
+                      </p>
                     </div>
-                    <Switch checked={emailNotif} onCheckedChange={setEmailNotif} />
+                    <Switch id="daily-journal" checked={emailNotif} onCheckedChange={setEmailNotif} />
                   </div>
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="font-medium">Price Alerts</div>
-                      <div className="text-sm text-muted-foreground">
+                       <Label htmlFor="price-alerts" className="font-medium cursor-pointer">Price Alerts</Label>
+                      <p className="text-sm text-muted-foreground">
                         Get notified when price targets are hit
-                      </div>
+                      </p>
                     </div>
-                    <Switch checked={priceAlerts} onCheckedChange={setPriceAlerts} />
+                    <Switch id="price-alerts" checked={priceAlerts} onCheckedChange={setPriceAlerts} />
                   </div>
                 </div>
               </div>
@@ -250,21 +255,22 @@ export default function Settings() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="font-medium">Critical Alerts</div>
-                      <div className="text-sm text-muted-foreground">
+                       <Label htmlFor="critical-alerts" className="font-medium cursor-pointer">Critical Alerts</Label>
+                      <p className="text-sm text-muted-foreground">
                         SMS for urgent notifications only
-                      </div>
+                      </p>
                     </div>
-                    <Switch checked={smsNotif} onCheckedChange={setSmsNotif} />
+                    <Switch id="critical-alerts" checked={smsNotif} onCheckedChange={setSmsNotif} />
                   </div>
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="font-medium">Agent Triggers</div>
-                      <div className="text-sm text-muted-foreground">
+                       <Label htmlFor="agent-triggers" className="font-medium cursor-pointer">Agent Triggers</Label>
+                      <p className="text-sm text-muted-foreground">
                         Get notified when agents execute actions
-                      </div>
+                      </p>
                     </div>
                     <Switch
+                      id="agent-triggers"
                       checked={agentTriggers}
                       onCheckedChange={setAgentTriggers}
                     />
