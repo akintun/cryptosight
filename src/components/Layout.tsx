@@ -97,81 +97,81 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </div>
       </header>
 
-      <div className="flex flex-1">
-        {/* Left Sidebar */}
-        <aside
-          className={`
-          fixed lg:sticky top-16 left-0 h-[calc(100vh-4rem)] z-40
-          w-64 lg:w-20 bg-sidebar border-r border-sidebar-border
-          transition-transform duration-300
-          ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
-        `}
-        >
-          <nav className="p-4 space-y-2">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = location.pathname === item.path;
+      <div className="flex flex-1 flex-col">
+        <div className="flex flex-1">
+          {/* Left Sidebar */}
+          <aside
+            className={`
+            fixed lg:sticky top-16 left-0 h-[calc(100vh-4rem)] z-40
+            w-64 lg:w-20 bg-sidebar border-r border-sidebar-border
+            transition-transform duration-300
+            ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+          `}
+          >
+            <nav className="p-4 space-y-2">
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = location.pathname === item.path;
 
-              return (
-                <Link key={item.path} to={item.path}>
-                  <div
-                    className={`
-                    flex items-center gap-3 px-3 py-3 rounded-lg
-                    transition-all duration-200 group
-                    ${
-                      isActive
-                        ? "bg-sidebar-accent border-l-4 border-sidebar-primary text-sidebar-primary-foreground"
-                        : "hover:bg-sidebar-accent/50 text-sidebar-foreground"
-                    }
-                  `}
-                  >
-                    <Icon className="w-5 h-5 flex-shrink-0" />
-                    <span className="lg:hidden group-hover:inline font-medium">
-                      {item.label}
-                    </span>
-                  </div>
-                </Link>
-              );
-            })}
-          </nav>
-        </aside>
-
-        {/* Overlay for mobile */}
-        {sidebarOpen && (
-          <div
-            className="fixed inset-0 bg-background/80 backdrop-blur-sm z-30 lg:hidden"
-            onClick={() => setSidebarOpen(false)}
-          />
-        )}
-
-        {/* Main Content */}
-        <main className="flex-1 overflow-auto">
-          {children}
-          
-          {/* Footer */}
-          <footer className="border-t border-border bg-card/30 backdrop-blur-sm mt-auto">
-            <div className="container mx-auto px-4 py-8">
-              <div className="flex flex-wrap justify-center gap-8 md:gap-12">
-                {navItems.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <Link 
-                      key={item.path} 
-                      to={item.path}
-                      className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                return (
+                  <Link key={item.path} to={item.path}>
+                    <div
+                      className={`
+                      flex items-center gap-3 px-3 py-3 rounded-lg
+                      transition-all duration-200 group
+                      ${
+                        isActive
+                          ? "bg-sidebar-accent border-l-4 border-sidebar-primary text-sidebar-primary-foreground"
+                          : "hover:bg-sidebar-accent/50 text-sidebar-foreground"
+                      }
+                    `}
                     >
-                      <Icon className="w-5 h-5" />
-                      <span className="font-medium">{item.label}</span>
-                    </Link>
-                  );
-                })}
-              </div>
-              <div className="text-center mt-6 text-sm text-muted-foreground">
-                © 2025 AI Crypto Journal. All rights reserved.
-              </div>
+                      <Icon className="w-5 h-5 flex-shrink-0" />
+                      <span className="lg:hidden group-hover:inline font-medium">
+                        {item.label}
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </nav>
+          </aside>
+
+          {/* Overlay for mobile */}
+          {sidebarOpen && (
+            <div
+              className="fixed inset-0 bg-background/80 backdrop-blur-sm z-30 lg:hidden"
+              onClick={() => setSidebarOpen(false)}
+            />
+          )}
+
+          {/* Main Content */}
+          <main className="flex-1 overflow-auto">{children}</main>
+        </div>
+
+        {/* Footer */}
+        <footer className="border-t border-border bg-card/30 backdrop-blur-sm">
+          <div className="container mx-auto px-4 py-8">
+            <div className="flex flex-wrap justify-center gap-8 md:gap-12">
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <Link 
+                    key={item.path} 
+                    to={item.path}
+                    className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <Icon className="w-5 h-5" />
+                    <span className="font-medium">{item.label}</span>
+                  </Link>
+                );
+              })}
             </div>
-          </footer>
-        </main>
+            <div className="text-center mt-6 text-sm text-muted-foreground">
+              © 2025 AI Crypto Journal. All rights reserved.
+            </div>
+          </div>
+        </footer>
       </div>
     </div>
   );
