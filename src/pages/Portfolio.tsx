@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -32,6 +33,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
+// --- Data Structures and Mock API ---
+
 interface Asset {
   id: string;
   name: string;
@@ -50,7 +53,6 @@ interface Asset {
 }
 
 const mockAssets: Asset[] = [
-  // ... (mock data remains the same)
   {
     id: "1",
     name: "Bitcoin",
@@ -85,22 +87,39 @@ const mockAssets: Asset[] = [
   },
 ];
 
+// This function simulates fetching data from a backend API.
+// In a real application, this would use `fetch` or `axios`.
+const fetchPortfolioAssets = async (): Promise<Asset[]> => {
+  console.log("Fetching latest portfolio data...");
+  // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 1000));
+
+  // To test error state, uncomment the following line:
+  // if (Math.random() > 0.5) throw new Error("Failed to connect to the data source.");
+
+  // Simulate price fluctuations for live data effect
+  return mockAssets.map(asset => ({
+    ...asset,
+    price: asset.price * (1 + (Math.random() - 0.5) * 0.05), // Fluctuate by +/- 5%
+  }));
+};
+
+// --- Component ---
+
 export default function Portfolio() {
-  const [assets, setAssets] = useState<Asset[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [expandedAsset, setExpandedAsset] = useState<string | null>(null);
 
-  useEffect(() => {
-    // Simulate API call
-    const timer = setTimeout(() => {
-      // To test error state, uncomment the next line
-      // setError("Failed to connect to the data source. Please try again later.");
-      setAssets(mockAssets);
-      setLoading(false);
-    }, 1500);
-    return () => clearTimeout(timer);
-  }, []);
+  const {
+    data: assets = [],
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery<Asset[], Error>({
+    queryKey: ['portfolioAssets'],
+    queryFn: fetchPortfolioAssets,
+    refetchInterval: 30000, // Automatically refetch every 30 seconds
+  });
 
   const totalValue = assets.reduce((sum, asset) => sum + asset.value, 0);
 
@@ -109,6 +128,7 @@ export default function Portfolio() {
   };
 
   const handleRefresh = () => {
+    refetch(); // Manually trigger a refetch
     toast.success("Portfolio data has been refreshed!");
   };
 
@@ -164,11 +184,11 @@ export default function Portfolio() {
           <div className="text-sm text-muted-foreground mb-1">
             Total Portfolio Value
           </div>
-          {loading ? (
+          {isLoading ? (
             <Skeleton className="h-12 w-64 mt-1" />
           ) : (
             <div className="text-5xl font-bold text-gradient">
-              ${totalValue.toLocaleString()}
+              ${totalValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
           )}
           <div className="flex items-center gap-2 mt-2">
@@ -182,16 +202,16 @@ export default function Portfolio() {
 
       {/* Asset Table */}
       <Card className="overflow-hidden shadow-elegant">
-        {error && (
+        {isError && (
           <Alert variant="destructive" className="m-4">
             <AlertTriangle className="h-4 w-4" />
             <AlertTitle>Error Loading Data</AlertTitle>
-            <AlertDescription>{error}</AlertDescription>
+            <AlertDescription>{error.message}</AlertDescription>
           </Alert>
         )}
         <Table>
           <TableHeader>
-            <TableRow className="bg-muted/50">
+            <TableRow className="bg-muted/50 hover:bg-muted/50">
               <TableHead className="w-12"></TableHead>
               <TableHead>Asset</TableHead>
               <TableHead className="text-right">Balance</TableHead>
@@ -202,12 +222,10 @@ export default function Portfolio() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {loading ? (
+            {isLoading ? (
               Array.from({ length: 4 }).map((_, i) => (
                 <TableRow key={i}>
-                  <TableCell>
-                    <Skeleton className="h-4 w-4" />
-                  </TableCell>
+                  <TableCell><Skeleton className="h-4 w-4" /></TableCell>
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <Skeleton className="w-8 h-8 rounded-full" />
@@ -217,21 +235,11 @@ export default function Portfolio() {
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="text-right">
-                    <Skeleton className="h-5 w-20 ml-auto" />
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Skeleton className="h-5 w-24 ml-auto" />
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Skeleton className="h-6 w-16 ml-auto rounded-full" />
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Skeleton className="h-5 w-28 ml-auto" />
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Skeleton className="h-5 w-24 ml-auto" />
-                  </TableCell>
+                  <TableCell className="text-right"><Skeleton className="h-5 w-20 ml-auto" /></TableCell>
+                  <TableCell className="text-right"><Skeleton className="h-5 w-24 ml-auto" /></TableCell>
+                  <TableCell className="text-right"><Skeleton className="h-6 w-16 ml-auto rounded-full" /></TableCell>
+                  <TableCell className="text-right"><Skeleton className="h-5 w-28 ml-auto" /></TableCell>
+                  <TableCell className="text-right"><Skeleton className="h-5 w-24 ml-auto" /></TableCell>
                 </TableRow>
               ))
             ) : assets.length > 0 ? (
@@ -242,19 +250,54 @@ export default function Portfolio() {
                     className="cursor-pointer hover:bg-muted/30 transition-colors"
                     onClick={() => toggleExpand(asset.id)}
                   >
-                    {/* ... TableCells remain the same */}
+                    <TableCell>
+                      {expandedAsset === asset.id ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center font-bold text-lg">
+                          {asset.logo}
+                        </div>
+                        <div>
+                          <div className="font-medium">{asset.name}</div>
+                          <div className="text-xs text-muted-foreground">{asset.symbol}</div>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right font-mono">{asset.balance.toLocaleString()}</TableCell>
+                    <TableCell className="text-right font-mono">${asset.price.toLocaleString()}</TableCell>
+                    <TableCell className="text-right">
+                      <Badge variant={asset.change24h >= 0 ? "default" : "destructive"} className={asset.change24h >= 0 ? "bg-success text-success-foreground" : ""}>
+                        {asset.change24h.toFixed(2)}%
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right font-mono">${asset.value.toLocaleString()}</TableCell>
+                    <TableCell className="text-right font-mono">{asset.allocation.toFixed(2)}%</TableCell>
                   </TableRow>
 
-                  {/* Expanded Row */}
+                  {/* Expanded Row for Transactions */}
                   {expandedAsset === asset.id && (
-                    <TableRow>
-                      {/* ... Expanded content remains the same */}
+                    <TableRow className="bg-muted/20 hover:bg-muted/20">
+                      <TableCell colSpan={7} className="p-0">
+                        <div className="p-4">
+                          <h4 className="font-semibold text-md mb-2">Recent Transactions</h4>
+                          <ul className="space-y-2">
+                            {asset.transactions.map((tx, index) => (
+                              <li key={index} className="flex justify-between items-center text-sm p-2 rounded-md bg-background">
+                                <span className="text-muted-foreground">{tx.date}</span>
+                                <span className="font-medium">{tx.type}</span>
+                                <span>{tx.amount}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </TableCell>
                     </TableRow>
                   )}
                 </>
               ))
             ) : (
-              !error && (
+              !isError && (
                 <TableRow>
                   <TableCell colSpan={7} className="h-48 text-center">
                     <h3 className="text-xl font-semibold mb-2">
