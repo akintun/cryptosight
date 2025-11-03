@@ -10,8 +10,6 @@ import {
   Search,
   Bell,
   User,
-  Menu,
-  X,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -21,6 +19,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ConnectWallet } from "./ConnectWallet"; // <-- IMPORT THE NEW COMPONENT
 
 const navItems = [
   { icon: BookOpen, label: "Journal", path: "/" },
@@ -31,7 +30,7 @@ const navItems = [
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false); // Note: sidebarOpen is not used, can be removed if mobile menu isn't planned
 
   return (
     <div className="min-h-screen flex flex-col pb-20 lg:pb-0">
@@ -61,12 +60,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
           {/* Right Controls */}
           <div className="flex items-center gap-2 lg:gap-3">
-            <Button variant="connect" size="sm" className="hidden lg:flex">
-              Connect Wallet
-            </Button>
-            <Button variant="connect" size="icon" className="lg:hidden">
-              <Wallet className="w-4 h-4" />
-            </Button>
+            {/* === THIS IS THE FIX === */}
+            {/* The old static buttons are replaced with our new dynamic component. */}
+            <ConnectWallet />
+            {/* ======================= */}
 
             <Button variant="ghost" size="icon" className="relative">
               <Bell className="w-5 h-5" />
@@ -133,8 +130,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
             const isActive = location.pathname === item.path;
 
             return (
-              <Link 
-                key={item.path} 
+              <Link
+                key={item.path}
                 to={item.path}
                 className="flex flex-col items-center justify-center flex-1 h-full"
               >
