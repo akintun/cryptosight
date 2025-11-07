@@ -15,7 +15,6 @@ import {
   RefreshCw,
   ChevronDown,
   ChevronUp,
-  AlertTriangle,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -31,26 +30,10 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { ErrorDisplay } from "@/components/ErrorDisplay"; // <-- Import new component
+import { Asset } from "@/types"; // <-- Import Asset type from central file
 
 // --- Data Structures and Mock API ---
-
-interface Asset {
-  id: string;
-  name: string;
-  symbol: string;
-  logo: string;
-  balance: number;
-  price: number;
-  change24h: number;
-  value: number;
-  allocation: number;
-  transactions: {
-    type: string;
-    amount: string;
-    date: string;
-  }[];
-}
 
 const mockAssets: Asset[] = [
   {
@@ -87,20 +70,13 @@ const mockAssets: Asset[] = [
   },
 ];
 
-// This function simulates fetching data from a backend API.
-// In a real application, this would use `fetch` or `axios`.
 const fetchPortfolioAssets = async (): Promise<Asset[]> => {
   console.log("Fetching latest portfolio data...");
-  // Simulate network delay
   await new Promise(resolve => setTimeout(resolve, 1000));
-
-  // To test error state, uncomment the following line:
   // if (Math.random() > 0.5) throw new Error("Failed to connect to the data source.");
-
-  // Simulate price fluctuations for live data effect
   return mockAssets.map(asset => ({
     ...asset,
-    price: asset.price * (1 + (Math.random() - 0.5) * 0.05), // Fluctuate by +/- 5%
+    price: asset.price * (1 + (Math.random() - 0.5) * 0.05),
   }));
 };
 
@@ -118,7 +94,7 @@ export default function Portfolio() {
   } = useQuery<Asset[], Error>({
     queryKey: ['portfolioAssets'],
     queryFn: fetchPortfolioAssets,
-    refetchInterval: 30000, // Automatically refetch every 30 seconds
+    refetchInterval: 30000,
   });
 
   const totalValue = assets.reduce((sum, asset) => sum + asset.value, 0);
@@ -128,7 +104,7 @@ export default function Portfolio() {
   };
 
   const handleRefresh = () => {
-    refetch(); // Manually trigger a refetch
+    refetch();
     toast.success("Portfolio data has been refreshed!");
   };
 
@@ -203,11 +179,13 @@ export default function Portfolio() {
       {/* Asset Table */}
       <Card className="overflow-hidden shadow-elegant">
         {isError && (
-          <Alert variant="destructive" className="m-4">
-            <AlertTriangle className="h-4 w-4" />
-            <AlertTitle>Error Loading Data</AlertTitle>
-            <AlertDescription>{error.message}</AlertDescription>
-          </Alert>
+          <div className="p-4">
+            <ErrorDisplay
+              title="Error Loading Portfolio"
+              message={error?.message || "An unknown error occurred."}
+              onRetry={handleRefresh}
+            />
+          </div>
         )}
         <Table>
           <TableHeader>
@@ -274,8 +252,6 @@ export default function Portfolio() {
                     <TableCell className="text-right font-mono">${asset.value.toLocaleString()}</TableCell>
                     <TableCell className="text-right font-mono">{asset.allocation.toFixed(2)}%</TableCell>
                   </TableRow>
-
-                  {/* Expanded Row for Transactions */}
                   {expandedAsset === asset.id && (
                     <TableRow className="bg-muted/20 hover:bg-muted/20">
                       <TableCell colSpan={7} className="p-0">
