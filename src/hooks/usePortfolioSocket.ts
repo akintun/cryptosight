@@ -1,27 +1,37 @@
-// Create a new hook: src/hooks/usePortfolioSocket.ts
+// src/hooks/usePortfolioSocket.ts
 
 import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { io } from 'socket.io-client'; // A popular WebSocket library
+import { io } from 'socket.io-client';
+import { toast } from "sonner"; // <-- Import the toast function
 
 export const usePortfolioSocket = () => {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    // Connect to the WebSocket server
     const socket = io('wss://your-api-server.com');
 
     socket.on('connect', () => {
       console.log('WebSocket connected!');
+      toast.success("Real-time connection established.");
     });
 
-    // Listen for the 'priceUpdate' event
+    // --- ADD ERROR HANDLING ---
+    socket.on('disconnect', () => {
+      console.warn('WebSocket disconnected!');
+      toast.error("Real-time connection lost. Data may be stale.");
+    });
+
+    socket.on('connect_error', (err) => {
+      console.error('WebSocket connection error:', err.message);
+      toast.error("Failed to connect for real-time updates.");
+    });
+    // --- END ERROR HANDLING ---
+
     socket.on('priceUpdate', (update: { symbol: string, price: number }) => {
-      // Update the TanStack Query cache directly
       queryClient.setQueryData(['portfolioAssets'], (oldData: any) => {
         if (!oldData) return oldData;
         
-        // Find the asset to update and return the new state
         return oldData.map((asset: any) =>
           asset.symbol === update.symbol
             ? { ...asset, price: update.price }
@@ -30,7 +40,6 @@ export const usePortfolioSocket = () => {
       });
     });
 
-    // Clean up the connection when the component unmounts
     return () => {
       socket.disconnect();
     };
