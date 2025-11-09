@@ -1,4 +1,4 @@
-# AI Crypto Journal
+# AI Crypto Journa
 
 An intuitive and powerful user interface for an AI-powered crypto journaling application. Track, analyze, and automate your crypto portfolio with AI-driven insights, detailed portfolio management, and on-chain automation agents.
 
